@@ -5,36 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Infusion Dosage Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    h1 { text-align: center; }
-    label { display: block; margin-top: 15px; font-weight: bold; }
-    select, input { width: 100%; padding: 8px; margin-top: 5px; }
-    .result { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #f9f9f9; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      margin-top: 40px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+    .result p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
+    .result strong {
+      color: #222;
+    }
   </style>
 </head>
 <body>
-  <h1>Infusion Dosage Calculator</h1>
+  <div class="container">
+    <h1>Infusion Dosage Calculator</h1>
 
-  <label for="medication">Medication</label>
-  <select id="medication">
-    <option value="">-- Select Medication --</option>
-    <option value="Rituxan">Rituxan</option>
-    <option value="Actemra">Actemra</option>
-    <option value="Benlysta">Benlysta</option>
-    <option value="Simponi Aria">Simponi Aria</option>
-    <option value="Remicade">Remicade</option>
-    <option value="Orencia">Orencia</option>
-    <option value="Krystexxa">Krystexxa</option>
-  </select>
+    <label for="medication">Medication</label>
+    <select id="medication">
+      <option value="">-- Select Medication --</option>
+      <option value="Rituxan">Rituxan</option>
+      <option value="Actemra">Actemra</option>
+      <option value="Benlysta">Benlysta</option>
+      <option value="Simponi Aria">Simponi Aria</option>
+      <option value="Remicade">Remicade</option>
+      <option value="Orencia">Orencia</option>
+      <option value="Krystexxa">Krystexxa</option>
+    </select>
 
-  <label for="weight">Patient Weight (lb)</label>
-  <input type="number" id="weight" placeholder="Enter weight in lb" />
+    <label for="weight">Patient Weight (lb)</label>
+    <input type="number" id="weight" placeholder="Enter weight in lb" />
 
-  <div class="result" id="result">
-    <p><strong>Dose (mg):</strong> <span id="dose">-</span></p>
-    <p><strong>Cap Info:</strong> <span id="cap">-</span></p>
-    <p><strong>Vial Sizes (mg):</strong> <span id="vials">-</span></p>
-    <p><strong>Total Vials Needed:</strong> <span id="totalVials">-</span></p>
+    <div class="result" id="result">
+      <p><strong>Dose (mg):</strong> <span id="dose">-</span></p>
+      <p><strong>Cap Info:</strong> <span id="cap">-</span></p>
+      <p><strong>Vial Sizes (mg):</strong> <span id="vials">-</span></p>
+      <p><strong>Total Vials Needed:</strong> <span id="totalVials">-</span></p>
+    </div>
   </div>
 
   <script>
@@ -62,7 +111,7 @@
         return;
       }
 
-      const wtKg = wtLb / 2.20462; // convert lb to kg
+      const wtKg = wtLb / 2.20462;
       let dose;
       if (med.type === "fixed") {
         dose = med.dose;
@@ -86,7 +135,6 @@
 
     medSelect.addEventListener("change", calculate);
     weightInput.addEventListener("input", calculate);
-<!-- rebuild -->
   </script>
 </body>
 </html>
