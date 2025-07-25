@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infusion Dosage Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    h1 { text-align: center; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    select, input { width: 100%; padding: 8px; margin-top: 5px; }
+    .result { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #f9f9f9; }
+  </style>
+</head>
+<body>
+  <h1>Infusion Dosage Calculator</h1>
+
+  <label for="medication">Medication</label>
+  <select id="medication">
+    <option value="">-- Select Medication --</option>
+    <option value="Rituxan">Rituxan</option>
+    <option value="Actemra">Actemra</option>
+    <option value="Benlysta">Benlysta</option>
+    <option value="Simponi Aria">Simponi Aria</option>
+    <option value="Remicade">Remicade</option>
+    <option value="Orencia">Orencia</option>
+    <option value="Krystexxa">Krystexxa</option>
+  </select>
+
+  <label for="weight">Patient Weight (lb)</label>
+  <input type="number" id="weight" placeholder="Enter weight in lb" />
+
+  <div class="result" id="result">
+    <p><strong>Dose (mg):</strong> <span id="dose">-</span></p>
+    <p><strong>Cap Info:</strong> <span id="cap">-</span></p>
+    <p><strong>Vial Sizes (mg):</strong> <span id="vials">-</span></p>
+    <p><strong>Total Vials Needed:</strong> <span id="totalVials">-</span></p>
+  </div>
+
+  <script>
+    const medData = {
+      "Rituxan": { type: "fixed", dose: 1000, cap: "Fixed", vials: [100, 500] },
+      "Actemra": { type: "mgkg", dose: 4, cap: "≤ 800 mg", max: 800, vials: [80, 200, 400] },
+      "Benlysta": { type: "mgkg", dose: 10, cap: "None", vials: [120, 400] },
+      "Simponi Aria": { type: "mgkg", dose: 2, cap: "2 mg/kg", vials: [50] },
+      "Remicade": { type: "mgkg", dose: 5, cap: "≤ 10 mg/kg", vials: [100] },
+      "Orencia": { type: "tiered", tiers: [[60,500],[100,750],[999,1000]], cap: "Tiered", vials: [250] },
+      "Krystexxa": { type: "mgkg", dose: 8, cap: "Weight-based", vials: [8] }
+    };
+
+    const medSelect = document.getElementById("medication");
+    const weightInput = document.getElementById("weight");
+
+    function calculate() {
+      const med = medData[medSelect.value];
+      const wtLb = parseFloat(weightInput.value);
+      if (!med || isNaN(wtLb) || wtLb <= 0) {
+        document.getElementById("dose").textContent = "-";
+        document.getElementById("cap").textContent = "-";
+        document.getElementById("vials").textContent = "-";
+        document.getElementById("totalVials").textContent = "-";
+        return;
+      }
+
+      const wtKg = wtLb / 2.20462; // convert lb to kg
+      let dose;
+      if (med.type === "fixed") {
+        dose = med.dose;
+      } else if (med.type === "mgkg") {
+        dose = wtKg * med.dose;
+        if (med.max) dose = Math.min(dose, med.max);
+      } else if (med.type === "tiered") {
+        for (const [limit, value] of med.tiers) {
+          if (wtKg <= limit) { dose = value; break; }
+        }
+      }
+
+      const vialSize = med.vials[med.vials.length-1];
+      const totalVials = Math.ceil(dose / vialSize);
+
+      document.getElementById("dose").textContent = dose.toFixed(2);
+      document.getElementById("cap").textContent = med.cap;
+      document.getElementById("vials").textContent = med.vials.join(", ");
+      document.getElementById("totalVials").textContent = totalVials;
+    }
+
+    medSelect.addEventListener("change", calculate);
+    weightInput.addEventListener("input", calculate);
+  </script>
+</body>
+</html>
