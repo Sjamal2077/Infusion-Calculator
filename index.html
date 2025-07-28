@@ -21,7 +21,7 @@
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 500px;
+      max-width: 550px;
       width: 100%;
     }
     h1 {
@@ -54,8 +54,12 @@
       margin: 8px 0;
       font-size: 15px;
     }
-    .result strong {
-      color: #222;
+    .disclaimer {
+      font-size: 12px;
+      color: #555;
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
     }
   </style>
 </head>
@@ -81,8 +85,12 @@
     <div class="result" id="result">
       <p><strong>Dose (mg):</strong> <span id="dose">-</span></p>
       <p><strong>Cap Info:</strong> <span id="cap">-</span></p>
-      <p><strong>Vial Sizes (mg):</strong> <span id="vials">-</span></p>
-      <p><strong>Total Vials Needed:</strong> <span id="totalVials">-</span></p>
+      <p><strong>Vial Combination:</strong> <span id="combination">-</span></p>
+      <p><strong>Unused Dose (mg):</strong> <span id="unused">-</span></p>
+    </div>
+
+    <div class="disclaimer">
+      By using this resource, you agree to the following: This Dosing Calculator is provided "AS IS" and is intended for use only by qualified healthcare providers. All calculations should be verified before use. The information is not a substitute for clinical judgment.
     </div>
   </div>
 
@@ -97,6 +105,20 @@
       "Krystexxa": { type: "mgkg", dose: 8, cap: "Weight-based", vials: [8] }
     };
 
+    function getVialCombination(dose, vials) {
+      vials = vials.sort((a,b) => b-a); // largest to smallest
+      let remaining = dose;
+      let combo = [];
+      for (let vial of vials) {
+        let count = Math.floor(remaining / vial);
+        if (count > 0) {
+          combo.push(`${count} x ${vial} mg`);
+          remaining -= count * vial;
+        }
+      }
+      return { combo: combo.join(", "), unused: remaining.toFixed(1) };
+    }
+
     const medSelect = document.getElementById("medication");
     const weightInput = document.getElementById("weight");
 
@@ -106,8 +128,8 @@
       if (!med || isNaN(wtLb) || wtLb <= 0) {
         document.getElementById("dose").textContent = "-";
         document.getElementById("cap").textContent = "-";
-        document.getElementById("vials").textContent = "-";
-        document.getElementById("totalVials").textContent = "-";
+        document.getElementById("combination").textContent = "-";
+        document.getElementById("unused").textContent = "-";
         return;
       }
 
@@ -124,13 +146,12 @@
         }
       }
 
-      const vialSize = med.vials[med.vials.length-1];
-      const totalVials = Math.ceil(dose / vialSize);
+      const result = getVialCombination(dose, med.vials);
 
       document.getElementById("dose").textContent = dose.toFixed(2);
       document.getElementById("cap").textContent = med.cap;
-      document.getElementById("vials").textContent = med.vials.join(", ");
-      document.getElementById("totalVials").textContent = totalVials;
+      document.getElementById("combination").textContent = result.combo;
+      document.getElementById("unused").textContent = result.unused;
     }
 
     medSelect.addEventListener("change", calculate);
